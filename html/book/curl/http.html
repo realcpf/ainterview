@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>连接规范 - book</title>
+        <title>http协议 - book</title>
         <!-- Custom HTML head -->
         
 
@@ -77,7 +77,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">写在开始之前</a></li><li class="chapter-item expanded affix "><a href="../Index.html">前言</a></li><li class="chapter-item expanded "><a href="../jdbc/index.html"><strong aria-hidden="true">1.</strong> 基于对JDBC的了解分析上层应用与底层驱动的解耦和适配</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../jdbc/load-driver.html"><strong aria-hidden="true">1.1.</strong> 驱动加载</a></li><li class="chapter-item expanded "><a href="../jdbc/connection.html" class="active"><strong aria-hidden="true">1.2.</strong> 连接规范</a></li><li class="chapter-item expanded "><a href="../jdbc/matedata.html"><strong aria-hidden="true">1.3.</strong> 通用MateData</a></li><li class="chapter-item expanded "><a href="../jdbc/statement.html"><strong aria-hidden="true">1.4.</strong> Statement不只是语句</a></li><li class="chapter-item expanded "><a href="../jdbc/transaction.html"><strong aria-hidden="true">1.5.</strong> 事务与回滚</a></li></ol></li><li class="chapter-item expanded "><a href="../curl/index.html"><strong aria-hidden="true">2.</strong> 通过对curl的基础实现了解各个应用层协议的规范与逻辑</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../curl/http.html"><strong aria-hidden="true">2.1.</strong> http协议</a></li></ol></li><li class="chapter-item expanded "><a href="../datastore/index.html"><strong aria-hidden="true">3.</strong> 【数仓】从百草园到三味书屋需要几步、多久、路上能不能吟诗作对</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../datastore/offlinesync.html"><strong aria-hidden="true">3.1.</strong> 离线同步</a></li></ol></li><li class="chapter-item expanded "><a href="../wasm/index.html"><strong aria-hidden="true">4.</strong> 【wasm】not-like-os-container</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../wasm/run-with-browser.html"><strong aria-hidden="true">4.1.</strong> run-with-browser</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="../ABOUT.html">关于</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">写在开始之前</a></li><li class="chapter-item expanded affix "><a href="../Index.html">前言</a></li><li class="chapter-item expanded "><a href="../jdbc/index.html"><strong aria-hidden="true">1.</strong> 基于对JDBC的了解分析上层应用与底层驱动的解耦和适配</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../jdbc/load-driver.html"><strong aria-hidden="true">1.1.</strong> 驱动加载</a></li><li class="chapter-item expanded "><a href="../jdbc/connection.html"><strong aria-hidden="true">1.2.</strong> 连接规范</a></li><li class="chapter-item expanded "><a href="../jdbc/matedata.html"><strong aria-hidden="true">1.3.</strong> 通用MateData</a></li><li class="chapter-item expanded "><a href="../jdbc/statement.html"><strong aria-hidden="true">1.4.</strong> Statement不只是语句</a></li><li class="chapter-item expanded "><a href="../jdbc/transaction.html"><strong aria-hidden="true">1.5.</strong> 事务与回滚</a></li></ol></li><li class="chapter-item expanded "><a href="../curl/index.html"><strong aria-hidden="true">2.</strong> 通过对curl的基础实现了解各个应用层协议的规范与逻辑</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../curl/http.html" class="active"><strong aria-hidden="true">2.1.</strong> http协议</a></li></ol></li><li class="chapter-item expanded "><a href="../datastore/index.html"><strong aria-hidden="true">3.</strong> 【数仓】从百草园到三味书屋需要几步、多久、路上能不能吟诗作对</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../datastore/offlinesync.html"><strong aria-hidden="true">3.1.</strong> 离线同步</a></li></ol></li><li class="chapter-item expanded "><a href="../wasm/index.html"><strong aria-hidden="true">4.</strong> 【wasm】not-like-os-container</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../wasm/run-with-browser.html"><strong aria-hidden="true">4.1.</strong> run-with-browser</a></li><li class="spacer"></li></ol></li><li class="chapter-item expanded "><a href="../ABOUT.html">关于</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -140,53 +140,111 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="连接规范"><a class="header" href="#连接规范">连接规范</a></h1>
+                        <h1 id="http协议"><a class="header" href="#http协议">http协议</a></h1>
 <hr />
-<h2 id="协议urljdbcdb"><a class="header" href="#协议urljdbcdb">协议URL（jdbc:db://）</a></h2>
+<p><a href="https://github.com/realcpf/like-curl/">like-curl</a></p>
+<h2 id="请求体"><a class="header" href="#请求体">请求体</a></h2>
 <blockquote>
-<p>通过定义规范协议是连接规范的第一步</p>
+<p>这里的换行是有实际意义的\r\n</p>
 </blockquote>
-<pre><code class="language-java">        for (DriverInfo aDriver : registeredDrivers) {
-           // If the caller does not have permission to load the driver then
-           // skip it.
-           if (isDriverAllowed(aDriver.driver, callerCL)) {
-               try {
-                   println(&quot;    trying &quot; + aDriver.driver.getClass().getName());
-                   Connection con = aDriver.driver.connect(url, info);
-                   if (con != null) {
-                       // Success!
-                   println(&quot;getConnection returning &quot; + aDriver.driver.getClass().getName());
-                   return (con);
-               }
-           } catch (SQLException ex) {
-               if (reason == null) {
-                   reason = ex;
-               }
+<pre><code class="language-text">GET / HTTP/1.1
+Host: localhost:8080
+who: realcpf
+
+</code></pre>
+<pre><code class="language-java">public static void main(String[] args) throws IOException {
+   Socket client = new Socket();
+   InetSocketAddress address = new InetSocketAddress(&quot;localhost&quot;,8000);
+   client.connect(address,1000);
+   String req = &quot;GET /book/ HTTP/1.1\r\n&quot; + 
+               &quot;Host: localhost:8000\r\n\r\n&quot;;
+   try(PrintWriter printWriter = new PrintWriter(client.getOutputStream(),true)){
+       printWriter.println(req);
+       String info = null;
+       try(BufferedReader bReader = new BufferedReader(new InputStreamReader(client.getInputStream(),&quot;UTF-8&quot;))){
+           while ((info = bReader.readLine())!=null) {
+               System.out.println(info);
            }
-
-       } else {
-           println(&quot;    skipping: &quot; + aDriver.getClass().getName());
        }
+   }
+}
+</code></pre>
+<h2 id="alive-with-golang"><a class="header" href="#alive-with-golang">alive with golang</a></h2>
+<pre><code class="language-go">func main() {
+   conn, err := net.DialTimeout(&quot;tcp&quot;, &quot;localhost:8080&quot;, time.Second)
+   if err != nil {
+   	fmt.Println(err)
+   }
+   defer conn.Close()
+   req := &quot;GET / HTTP/1.1\r\n&quot; +
+   	&quot;Host: localhost:8080\r\n&quot; +
+   	&quot;who: realcpf\r\n&quot; +
+   	&quot;\r\n&quot;
+   conn.Write([]byte(req))
+   // 在没有 SetReadDeadline 的情况下 会自动断开，并不会报出超时异常，
+   // 会打印响应信息
+   buf := make([]byte, 1024)
+   _, err = conn.Read(buf)
+   if err != nil {
+   	fmt.Println(err)
+   }
+   fmt.Printf(&quot;%s&quot;, string(buf))
+}
 
+</code></pre>
+<blockquote>
+<p>没有SetReadDeadline 不会断开,不会打印响应信息</p>
+</blockquote>
+<pre><code class="language-go">    var buf bytes.Buffer
+    len, err := io.Copy(&amp;buf, conn)
+    if err != nil {
+    	fmt.Println(err)
+    }
+    fmt.Printf(&quot;len%d:%s&quot;, len, buf.String())
+</code></pre>
+<blockquote>
+<p>没有SetReadDeadline 不会断开,会打印响应信息</p>
+</blockquote>
+<pre><code class="language-go">   buf := make([]byte, 1024)
+   len := 0
+   for {
+   	fmt.Printf(&quot;%d %s&quot;, len, string(buf))
+   	n, err := conn.Read(buf[len:])
+   	if n &gt; 0 {
+   		fmt.Printf(&quot;n:%d\n&quot;, n)
+   		len += n
+   	}
+   	if err != nil {
+   		if err != io.EOF {
+   			fmt.Println(err)
+   			break
+   		}
+   		break
+   	}
    }
 </code></pre>
 <blockquote>
-<p>其中以PG的实现为例，对URL进行判断 以区别不同的driver，是的环境中存在多种driver是可以直接通过规范的jdbcURL协议进行自动连接到正确的driver</p>
+<p>没有SetReadDeadline 不会断开,不会打印响应信息</p>
 </blockquote>
-<pre><code class="language-java">   
-   if (!url.startsWith(&quot;jdbc:postgresql:&quot;)) {
-     return null;
+<pre><code class="language-go">   //
+
+	buf1, err := ioutil.ReadAll(conn)
+
+   if err != nil {
+   	fmt.Println(err)
    }
+   
+   fmt.Println(string(buf1))
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../jdbc/load-driver.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../curl/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../jdbc/matedata.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../datastore/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -195,10 +253,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../jdbc/load-driver.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../curl/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../jdbc/matedata.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../datastore/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
